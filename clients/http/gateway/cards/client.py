@@ -1,6 +1,11 @@
 from httpx import Response
+from locust.env import Environment
 
-from clients.http.gateway.client import build_gateway_http_client
+from clients.http.gateway.client import (
+    build_gateway_http_client,
+    build_gateway_locust_http_client
+)
+
 from clients.http.client import HTTPClient
 from clients.http.gateway.cards.schema import (
     IssueVirtualCardRequestSchema,
@@ -29,5 +34,10 @@ class CardsGatewayHTTPClient(HTTPClient):
         return IssuePhysicalCardResponseSchema.model_validate_json(response.text)
 
 
+
 def build_cards_gateway_http_client() -> CardsGatewayHTTPClient:
     return CardsGatewayHTTPClient(client=build_gateway_http_client())
+
+
+def build_cards_gateway_locust_http_client(environment: Environment) -> CardsGatewayHTTPClient:
+    return CardsGatewayHTTPClient(client=build_gateway_locust_http_client(environment))

@@ -1,6 +1,11 @@
 from httpx import Response
-from clients.http.client import HTTPClient
-from clients.http.gateway.client import build_gateway_http_client
+from clients.http.client import HTTPClient, HTTPClientExtensions
+from locust.env import Environment
+
+from clients.http.gateway.client import (
+    build_gateway_http_client,
+    build_gateway_locust_http_client
+)
 
 from clients.http.gateway.users.schema import (
     GetUserResponseSchema,
@@ -9,9 +14,13 @@ from clients.http.gateway.users.schema import (
 )
 
 
+
 class UsersGatewayHTTPClient(HTTPClient):
     def get_user_api(self, user_id: str) -> Response:
-        return self.get(f"/api/v1/users/{user_id}")
+        return self.get(
+            f"/api/v1/users/{user_id}",
+            extensions=HTTPClientExtensions(route="/api/v1/users/{user_id}")
+        )
 
     def create_user_api(self, request: CreateUserRequestSchema) -> Response:
         return self.post("/api/v1/users", json=request.model_dump(by_alias=True))
@@ -29,3 +38,7 @@ class UsersGatewayHTTPClient(HTTPClient):
 
 def build_users_gateway_http_client() -> UsersGatewayHTTPClient:
     return UsersGatewayHTTPClient(client=build_gateway_http_client())
+
+
+def build_users_gateway_locust_http_client(environment: Environment) -> UsersGatewayHTTPClient:
+    return UsersGatewayHTTPClient(client=build_gateway_locust_http_client(environment))
