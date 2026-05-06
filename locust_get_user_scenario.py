@@ -1,27 +1,22 @@
-from locust import HttpUser, between, task
-from tools.fakers import fake
+from locust import User, between, task
+from clients.http.gateway.users.schema import CreateUserResponseSchema
+from clients.http.gateway.users.client import UsersGatewayHTTPClient, build_users_gateway_locust_http_client
 
 
-class GetUserScenarioUser(HttpUser):
+class GetUserScenarioUser(User):
+    host = "localhost"
     wait_time = between(1, 3)
-    user_data: dict
+    users_gateway_client: UsersGatewayHTTPClient
+    create_user_response: CreateUserResponseSchema
 
     def on_start(self) -> None:
         """
         Метод on_start вызывается один раз при запуске каждой сессии виртуального пользователя.
         Здесь мы создаем нового пользователя, отправляя POST-запрос к /api/v1/users.
         """
-        request = {
-            "email": fake.email(),
-            "lastName": fake.last_name(),
-            "firstName": fake.first_name(),
-            "middleName": fake.middle_name(),
-            "phoneNumber": fake.phone_number()
-        }
-        response = self.client.post("/api/v1/users", json=request)
+        self.users_gateway_client = build_users_gateway_locust_http_client(self.environment)
+        self.create_user_response = self.users_gateway_client.create_user()
 
-        # Сохраняем полученные данные, включая ID пользователя
-        self.user_data = response.json()
 
     @task
     def get_user(self):
@@ -29,7 +24,5 @@ class GetUserScenarioUser(HttpUser):
         Основная нагрузочная задача: получение информации о пользователе.
         Здесь мы выполняем GET-запрос к /api/v1/users/{user_id}.
         """
-        self.client.get(
-            f"/api/v1/users/{self.user_data['user']['id']}",
-            name="/api/v1/users/{user_id}"  # Явное указание имени группы запросов
-        )
+        self.users_gateway_client.get_user(self.create_user_response.user.id)
+

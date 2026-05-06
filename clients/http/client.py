@@ -2,7 +2,7 @@ from httpx import Client, URL, QueryParams, Response
 from typing import Any, TypedDict
 
 
-class HTTPClientExtensions(TypedDict):
+class HTTPClientExtensions(TypedDict, total=False):
     route: str
 
 
@@ -16,7 +16,7 @@ class HTTPClient:
             params: QueryParams | None = None,
             extensions: HTTPClientExtensions | None = None
     ) -> Response:
-        return self.client.get(url, params=params)
+        return self.client.get(url=url, params=params, extensions=extensions)
 
 
     def post(
@@ -25,5 +25,5 @@ class HTTPClient:
             json: Any | None = None,
             extensions: HTTPClientExtensions | None = None
     ) -> Response:
-        return self.client.post(url, json=json)
+        return self.client.post(url=url, json=json, extensions=extensions)
 
