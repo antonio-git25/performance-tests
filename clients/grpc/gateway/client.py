@@ -15,4 +15,4 @@ def build_gateway_grpc_client() -> Channel:
 def build_gateway_locust_grpc_client(environment: Environment) -> Channel:
     locust_interceptor = LocustInterceptor(environment=environment)
     channel = insecure_channel("localhost:9003")
-    return insecure_channel(channel, locust_interceptor)
+    return intercept_channel(channel, locust_interceptor)

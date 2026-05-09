@@ -74,5 +74,5 @@ def build_cards_gateway_grpc_client() -> CardsGatewayGRPCClient:
     return CardsGatewayGRPCClient(channel=build_gateway_grpc_client())
 
 
-def build_card_gateway_locust_grpc_client(environment: Environment) -> CardsGatewayGRPCClient:
+def build_cards_gateway_locust_grpc_client(environment: Environment) -> CardsGatewayGRPCClient:
     return CardsGatewayGRPCClient(channel=build_gateway_locust_grpc_client(environment))
