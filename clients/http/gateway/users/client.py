@@ -1,6 +1,7 @@
 from httpx import Response
 from clients.http.client import HTTPClient, HTTPClientExtensions
 from locust.env import Environment
+from tools.routes import APIRoutes
 
 from clients.http.gateway.client import (
     build_gateway_http_client,
@@ -18,12 +19,12 @@ from clients.http.gateway.users.schema import (
 class UsersGatewayHTTPClient(HTTPClient):
     def get_user_api(self, user_id: str) -> Response:
         return self.get(
-            f"/api/v1/users/{user_id}",
-            extensions=HTTPClientExtensions(route="/api/v1/users/{user_id}")
+            f"{APIRoutes.USERS}/{user_id}",
+            extensions=HTTPClientExtensions(route=f"{APIRoutes.USERS}/{{user_id}}")
         )
 
     def create_user_api(self, request: CreateUserRequestSchema) -> Response:
-        return self.post("/api/v1/users", json=request.model_dump(by_alias=True))
+        return self.post(APIRoutes.USERS, json=request.model_dump(by_alias=True))
 
     def get_user(self, user_id: str) -> GetUserResponseSchema:
         response = self.get_user_api(user_id)

@@ -18,4 +18,5 @@ class Settings(BaseSettings):
     gateway_grpc_client: GRPCClientConfig
 
 
-settings = Settings
+settings = Settings()
+

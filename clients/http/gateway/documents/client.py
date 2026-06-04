@@ -1,6 +1,7 @@
 from httpx import Response
 from clients.http.client import HTTPClient, HTTPClientExtensions
 from locust.env import Environment
+from tools.routes import APIRoutes
 
 from clients.http.gateway.client import (
     build_gateway_http_client,
@@ -23,8 +24,8 @@ class DocumentsGatewayHTTPClient(HTTPClient):
         :return: Ответ от сервера (объект httpx.Response).
         """
         return self.get(
-            f"/api/v1/documents/tariff-document/{account_id}",
-            extensions=HTTPClientExtensions(route="/api/v1/documents/tariff-document/{account_id}")
+            f"{APIRoutes.DOCUMENTS}/tariff-document/{account_id}",
+            extensions=HTTPClientExtensions(route=f"{APIRoutes.DOCUMENTS}/tariff-document/{{account_id}}")
         )
 
 
@@ -35,8 +36,8 @@ class DocumentsGatewayHTTPClient(HTTPClient):
         :return: Ответ от сервера (объект httpx.Response).
         """
         return self.get(
-            f"/api/v1/documents/contract-document/{account_id}",
-            extensions=HTTPClientExtensions(route="/api/v1/documents/contract-document/{account_id}")
+            f"{APIRoutes.DOCUMENTS}/contract-document/{account_id}",
+            extensions=HTTPClientExtensions(route=f"{APIRoutes.DOCUMENTS}/contract-document/{{account_id}}")
         )
 
 
