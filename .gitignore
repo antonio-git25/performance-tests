@@ -5,12 +5,15 @@
 .venv
 __pycache__
 
-# allure
-allure-results
-allure-report
-
+# reports locust
+dumps
 reports
+locust_*.csv
+locust_*.json
+report.html
 
+# other
+api_lessons
 Redis
 
 
