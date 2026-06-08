@@ -72,7 +72,37 @@ jobs:
       - name: Run load tests and generate HTML report
         run: locust --config=${{ github.event.inputs.SCENARIO }} --html=./reports/${{ github.run_id }}/index.html
 
-      # 9. Деплой HTML-отчёта в GitHub Pages, чтобы можно было посмотреть результаты в браузере
+      # 10. Корректно останавливаем docker-контейнеры и удаляем volume-ы (например, temp-файлы)
+      - name: Stop test services
+        if: always()
+        run: docker compose -f docker-compose.ci.yaml down -v
+        working-directory: performance-qa-engineer-course
+
+      - name: Upload Locust reports
+        if: always()
+        uses: actions/upload-artifacts@v3
+        with:
+          name: reports
+          path: reports
+
+  publish-report:
+    if: always()
+    needs: [run-tests]
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+        with:
+          ref: gh-pages
+          path: gh-pages
+
+      - name: Download Locust reports
+        uses: actions/download-artifact@v4
+        with:
+          name: reports
+          path: reports
+
       - name: Deploy HTML report to GitHub Pages
         if: always()
         uses: peaceiris/actions-gh-pages@v4
@@ -82,8 +112,3 @@ jobs:
           publish_dir: reports  # Публикуем директорию reports
           publish_branch: gh-pages  # На ветке gh-pages
 
-      # 10. Корректно останавливаем docker-контейнеры и удаляем volume-ы (например, temp-файлы)
-      - name: Stop test services
-        if: always()
-        run: docker compose -f docker-compose.ci.yaml down -v
-        working-directory: performance-qa-engineer-course
